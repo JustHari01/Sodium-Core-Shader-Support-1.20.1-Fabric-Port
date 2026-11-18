@@ -1,0 +1,42 @@
+package de.linusdev.mixin;
+
+import me.jellysquid.mods.sodium.client.gl.shader.ShaderConstants;
+import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkFogMode;
+import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
+import me.jellysquid.mods.sodium.client.render.chunk.terrain.DefaultTerrainRenderPasses;
+import me.jellysquid.mods.sodium.client.render.chunk.terrain.TerrainRenderPass;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+
+@Mixin(ChunkShaderOptions.class)
+public abstract class MixinChunkShaderOptions {
+
+    @Shadow(remap = false) @Final private ChunkFogMode fog;
+    @Shadow(remap = false) @Final private TerrainRenderPass pass;
+
+    /**
+     * @author LinusDev
+     * @reason Expose the active terrain render pass to resource-pack shaders.
+     */
+    @Overwrite(remap = false)
+    public ShaderConstants constants() {
+        ShaderConstants.Builder constants = ShaderConstants.builder();
+        constants.addAll(this.fog.getDefines());
+        if (this.pass.supportsFragmentDiscard()) {
+            constants.add("USE_FRAGMENT_DISCARD");
+        }
+
+        if (pass == DefaultTerrainRenderPasses.SOLID) {
+            constants.add("RENDER_PASS_SOLID");
+        } else if (pass == DefaultTerrainRenderPasses.CUTOUT) {
+            constants.add("RENDER_PASS_CUTOUT");
+        } else if (pass == DefaultTerrainRenderPasses.TRANSLUCENT) {
+            constants.add("RENDER_PASS_TRANSLUCENT");
+        }
+
+        constants.add("USE_VERTEX_COMPRESSION");
+        return constants.build();
+    }
+}

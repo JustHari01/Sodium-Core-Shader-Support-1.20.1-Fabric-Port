@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "package": "de.linusdev.mixin",
+  "refmap": "sodium-core-shader-support-1.20.1-unofficial-refmap.json",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [],
+  "client": [
+    "MixinAbstractPack",
+    "MixinChunkShaderOptions",
+    "MixinGLProgram",
+    "MixinPackListWidget",
+    "MixinResourcePackEntry",
+    "MixinResourcePackProfile",
+    "MixinShaderLoader"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}
